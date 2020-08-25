@@ -17,9 +17,9 @@
           </v-col>
           <v-col>
             <div class="float-right">
-              <v-btn :depressed="period===1" small @click="updatePeriod(1)">Today</v-btn>
-              <v-btn :depressed="period===2" small @click="updatePeriod(2)">Yesterday</v-btn>
-              <v-btn :depressed="period===3" small @click="updatePeriod(3)">Two days ago</v-btn>
+              <button-period :current-period="period" period="1" @clicked="updatePeriod">Today</button-period>
+              <button-period :current-period="period" period="2" @clicked="updatePeriod">Yesterday</button-period>
+              <button-period :current-period="period" period="3" @clicked="updatePeriod">Two days ago</button-period>
             </div>
           </v-col>
         </v-row>
@@ -78,9 +78,10 @@
 import CardStats from "@/components/CardStats";
 import TableStats from "@/components/TableStats";
 import CompareStats from "@/components/CompareStats";
+import ButtonPeriod from "@/components/ButtonPeriod";
 
 export default {
-  components: {CompareStats, TableStats, CardStats},
+  components: {ButtonPeriod, CompareStats, TableStats, CardStats},
   layout: 'covid',
   data() {
     var cardStats = []
@@ -171,6 +172,7 @@ export default {
     },
 
     async updatePeriod(period) {
+      // console.log('updatePeriod %o', period)
       this.period = period
 
       var periodQueryParams = {
@@ -183,7 +185,7 @@ export default {
     },
 
     async updateStats(queryParams = {}) {
-      console.log('BasePage updateStats')
+      // console.log('BasePage updateStats')
       this.asyncUpdateAll(queryParams)
       this.asyncUpdateAllCountries(queryParams)
     },
