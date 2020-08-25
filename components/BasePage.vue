@@ -113,13 +113,6 @@ export default {
 
     this.updateStats()
   },
-  // computed: {
-  //   computedAutocompleteItems() {
-  //     var items = _.cloneDeep([], this.countryNames)
-  //     items = _.without(items, this.country);
-  //     return items
-  //   },
-  // },
   methods: {
     initParameters() {
       this.title = 'Dashboard'
@@ -134,7 +127,7 @@ export default {
         text: 'Dashboard',
         disabled: false,
         exact: true,
-        to: '/covid',
+        to: {name: 'index'}
       })
 
       if (this.country) {
@@ -142,7 +135,7 @@ export default {
           text: 'Detailed view: ' + this.country,
           exact: true,
           disabled: false,
-          to: {name: 'covid-country', params: {country: this.country,}}
+          to: {name: 'country', params: {country: this.country,}}
         })
       }
 
@@ -152,7 +145,7 @@ export default {
           exact: true,
           disabled: true,
           to: {
-            name: 'covid-country-compare', params: {
+            name: 'country-compare', params: {
               country: this.country,
               compare: this.country2,
             }
@@ -251,12 +244,12 @@ export default {
 
       if (country === null) {
         var location = {
-          name: 'covid'
+          name: 'index'
         }
       } else {
 
         var location = {
-          name: 'covid-country', params: {
+          name: 'country', params: {
             country: country,
           }
         }
@@ -269,7 +262,7 @@ export default {
       // console.log('redirectToCompare %o', event);
 
       var location = {
-        name: 'covid-country-compare', params: {
+        name: 'country-compare', params: {
           country: this.country,
           compare: this.autoCompleteCountry2,
         }

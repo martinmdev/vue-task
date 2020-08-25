@@ -19,7 +19,7 @@
       >
         <template #item.country="{ value }">
           <nuxt-link
-            :to="{name: 'covid-country', params:{country:value.name}}"
+            :to="{name: 'country', params:{country:value.name}}"
           >
             <v-img
               :src="value.flag"
