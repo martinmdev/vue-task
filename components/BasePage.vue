@@ -36,7 +36,6 @@
                 label="Compare to another country"
                 placeholder="Start typing to Search"
                 search-input.sync="search"
-                no-filter
                 hide-no-data
                 hide-selected
                 @change="redirectToCompare"
@@ -79,6 +78,7 @@ import CardStats from "@/components/CardStats";
 import TableStats from "@/components/TableStats";
 import CompareStats from "@/components/CompareStats";
 import ButtonPeriod from "@/components/ButtonPeriod";
+import _ from 'lodash'
 
 export default {
   components: {ButtonPeriod, CompareStats, TableStats, CardStats},
@@ -277,7 +277,6 @@ export default {
       // console.log('countryChanged %o', event);
       this.redirectToCountry(event)
     },
-
   }
 }
 </script>
