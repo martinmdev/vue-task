@@ -7,6 +7,27 @@
         :items-per-page="itemsPerPage"
         hide-default-footer
       >
+
+        <template #item.value1="{ value }">
+          {{ value.formatted }}
+          <span
+            :style="'color: '+value.diffColor+';'"
+            v-if="value.difference"
+          >
+            ( + {{ value.difference }} )
+          </span>
+        </template>
+
+        <template #item.value2="{ value }">
+          {{ value.formatted }}
+          <span
+            :style="'color: '+value.diffColor+';'"
+            v-if="value.difference"
+          >
+            ( + {{ value.difference }} )
+          </span>
+        </template>
+
       </v-data-table>
     </v-col>
   </v-row>
@@ -41,9 +62,10 @@ export default {
 
     getComputedComparisonTableItems() {
       var stats = _.cloneDeep(this.statsData)
+      var statsFormatted = _.cloneDeep(this.statsData)
 
-      this.formatAllProps(stats[0])
-      this.formatAllProps(stats[1])
+      this.formatAllProps(statsFormatted[0])
+      this.formatAllProps(statsFormatted[1])
       // console.log('getComparisonTableItems stats %o', stats);
 
       var items = []
@@ -73,13 +95,23 @@ export default {
       ]
 
       var labelMap = this.getPropertyToLabelMap()
+      var self = this
 
       _.forEach(itemNames, function (propName) {
         var item = {
+          propName: propName,
           name: labelMap[propName],
-          value1: stats[0][propName],
-          value2: stats[1][propName],
+          value1: {
+            value: stats[0][propName],
+            formatted: statsFormatted[0][propName],
+          },
+          value2: {
+            value: stats[1][propName],
+            formatted: statsFormatted[1][propName],
+          }
         }
+
+        self.addItemDifference(item)
 
         items.push(item)
       })
@@ -90,10 +122,43 @@ export default {
 
     },
 
+
   },
   data() {
     return {
       itemsPerPage: 100,
+    }
+  },
+  methods: {
+    addItemDifference(item) {
+      console.log('addItemDifference %o', item);
+      var skip = [
+        'country',
+        'updated',
+      ]
+      if (skip.indexOf(item.propName) !== -1) {
+        return
+      }
+
+      var good= [
+        'testsPerOneMillion',
+        'recoveredPerOneMillion',
+      ]
+
+      var diffColor = 'red';
+      if (good.indexOf(item.propName) !== -1) {
+        diffColor = 'green';
+      }
+
+      var diff = item.value1.value - item.value2.value
+      var absDiff = Math.abs(diff)
+      if (diff > 0) {
+        item.value1.difference = absDiff
+        item.value1.diffColor = diffColor
+      } else {
+        item.value2.difference = absDiff
+        item.value2.diffColor = diffColor
+      }
     }
   },
 }
