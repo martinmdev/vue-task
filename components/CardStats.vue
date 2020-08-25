@@ -8,7 +8,20 @@
       <card-simple
         :title="item.name"
         :text="item.value"
-      ></card-simple>
+      >
+        <template
+          v-if="item.propName === 'country'"
+          v-slot:titleSelect
+        >
+          <v-select
+            :items="countryOptionItems"
+            :value="country"
+            dense
+            outlined
+            @change="onChange"
+          ></v-select>
+        </template>
+      </card-simple>
     </v-col>
   </v-row>
 </template>
@@ -20,6 +33,10 @@ import CardSimple from "@/components/CardSimple";
 export default {
   components: {CardSimple},
   extends: BaseCovidStats,
+  props: [
+    'countryOptionItems',
+    'country',
+  ],
   computed: {
     getComputedStatsCardsData() {
       var labelMap = this.getPropertyToLabelMap()
@@ -30,6 +47,7 @@ export default {
       _.forEach(stats, function (value, key) {
         var filteredValue = self.formatPropValue(key, value)
         var elem = {
+          propName: key,
           name: labelMap[key],
           value: filteredValue,
         }
@@ -37,7 +55,14 @@ export default {
         data.push(elem)
       })
 
+      // console.log('getComputedStatsCardsData %o', data)
+
       return data
+    },
+  },
+  methods: {
+    onChange(event) {
+      this.$emit('country:changed', event)
     },
   },
 }

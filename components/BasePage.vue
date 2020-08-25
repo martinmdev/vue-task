@@ -49,6 +49,9 @@
         >
           <card-stats
             :stats-data="cardStats"
+            :country-option-items="countryOptionItems"
+            :country="country"
+            v-on:country:changed="countryChanged"
           ></card-stats>
         </slot>
         <slot name="compareStats"
@@ -94,6 +97,7 @@ export default {
       isLoading: false,
       country: null,
       countryNames: [],
+      countryOptionItems: [],
       autoCompleteItems: [],
       breadCrumbItems: [],
       country2: null,
@@ -204,7 +208,26 @@ export default {
       })
 
       this.countryNames = countryNames
+      this.countryOptionItems = this.getCountryOptionItems(countryNames)
       this.autoCompleteItems = _.without(countryNames, this.country);
+    },
+
+    getCountryOptionItems(countryNames) {
+      var items = []
+
+      items.push({
+        value: null,
+        text: 'Global'
+      })
+
+      _.forEach(countryNames, function (name) {
+        items.push({
+          value: name,
+          text: name,
+        })
+      })
+
+      return items
     },
 
     async asyncUpdateCountryData(queryParams = {}) {
@@ -223,12 +246,19 @@ export default {
       }
     },
 
-    redirectToCountry(event) {
-      // console.log('redirectToCountry %o', event);
+    redirectToCountry(country) {
+      // console.log('redirectToCountry %o', country);
 
-      var location = {
-        name: 'covid-country', params: {
-          country: this.country,
+      if (country === null) {
+        var location = {
+          name: 'covid'
+        }
+      } else {
+
+        var location = {
+          name: 'covid-country', params: {
+            country: country,
+          }
         }
       }
 
@@ -246,6 +276,11 @@ export default {
       }
 
       this.$router.replace(location)
+    },
+
+    countryChanged(event) {
+      // console.log('countryChanged %o', event);
+      this.redirectToCountry(event)
     },
 
   }
