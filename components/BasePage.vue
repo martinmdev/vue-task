@@ -1,66 +1,73 @@
 <template>
-  <v-row>
-    <v-col>
-      <slot name="header">
-        <v-row class="mb-4">
-          <h1>{{ title }}</h1>
-        </v-row>
-      </slot>
-      <slot name="updateLinks">
-        <v-row>
-          <v-btn small to="/covid" nuxt class="mr-4">Dashboard</v-btn>
-          <v-btn v-if="country2" small :to="{name: 'covid-country', params: {country: country,}}" nuxt
-                 class="mr-4"
-          >Go back to Detailed view: {{ country }}
-          </v-btn>
-          <v-btn small @click="updateStats()">Today</v-btn>
-          <v-btn small @click="updateStats({yesterday:true})">Yesterday</v-btn>
-          <v-btn small @click="updateStats({twoDaysAgo:true})">Two days ago</v-btn>
-        </v-row>
-      </slot>
-      <slot
-        v-if="country && !country2"
-        name="autocomplete">
-        <v-row>
-          <v-col>
-            <v-autocomplete
-              v-model="country2"
-              :items="autoCompleteItems"
-              :loading="isLoading"
-              label="Compare to another country"
-              placeholder="Start typing to Search"
-              search-input.sync="search"
-              no-filter
-              hide-no-data
-              hide-selected
-              @change="redirectToCompare"
-            ></v-autocomplete>
-          </v-col>
-        </v-row>
-      </slot>
-      <slot name="cardStats"
-            v-if="!showCompare"
-      >
-        <card-stats
-          :stats="cardStats"
-        ></card-stats>
-      </slot>
-      <slot name="compareStats"
-            v-else
-      >
-        <compare-stats
-          :compare-stats="compareStats"
-        ></compare-stats>
-      </slot>
-      <slot name="tableStats"
-            v-if="!country && !country2"
-      >
-        <table-stats
-          :table-stats="tableStats"
-        ></table-stats>
-      </slot>
-    </v-col>
-  </v-row>
+  <v-layout>
+    <v-row>
+      <v-col>
+        <slot name="header">
+          <v-row class="mb-4">
+            <h1>{{ title }}</h1>
+          </v-row>
+        </slot>
+        <slot name="updateLinks">
+          <v-row>
+            <v-col cols="6">
+              <v-breadcrumbs
+                :items="breadCrumbItems"
+                divider=">>"
+              ></v-breadcrumbs>
+            </v-col>
+            <v-col>
+              <div class="float-right">
+                <v-btn :depressed="period===1" small @click="updatePeriod(1)">Today</v-btn>
+                <v-btn :depressed="period===2" small @click="updatePeriod(2)">Yesterday</v-btn>
+                <v-btn :depressed="period===3" small @click="updatePeriod(3)">Two days ago</v-btn>
+              </div>
+            </v-col>
+          </v-row>
+        </slot>
+        <slot
+          v-if="country && !country2"
+          name="autocomplete">
+          <v-row>
+            <v-col>
+              <v-autocomplete
+                v-model="autoCompleteCountry2"
+                :items="autoCompleteItems"
+                :loading="isLoading"
+                label="Compare to another country"
+                placeholder="Start typing to Search"
+                search-input.sync="search"
+                no-filter
+                hide-no-data
+                hide-selected
+                @change="redirectToCompare"
+              ></v-autocomplete>
+            </v-col>
+          </v-row>
+        </slot>
+        <slot name="cardStats"
+              v-if="!showCompare"
+        >
+          <card-stats
+            :stats="cardStats"
+          ></card-stats>
+        </slot>
+        <slot name="compareStats"
+              v-else
+        >
+          <compare-stats
+            :compare-stats="compareStats"
+          ></compare-stats>
+        </slot>
+        <slot name="tableStats"
+              v-if="!country && !country2"
+        >
+          <table-stats
+            :table-stats="tableStats"
+          ></table-stats>
+        </slot>
+      </v-col>
+    </v-row>
+  </v-layout>
 </template>
 
 <script>
@@ -88,16 +95,18 @@ export default {
       country: null,
       countryNames: [],
       autoCompleteItems: [],
+      breadCrumbItems: [],
       country2: null,
+      autoCompleteCountry2: null,
       search: null,
+      period: 1,
     }
   },
   mounted() {
-    this.title = 'Dashboard'
-    this.country = null
-    this.country2 = null
-    // this.asyncUpdateAll()
-    // this.asyncUpdateAllCountries()
+    this.initParameters()
+
+    this.setBreadCrumbItems()
+
     this.updateStats()
   },
   // computed: {
@@ -108,6 +117,47 @@ export default {
   //   },
   // },
   methods: {
+    initParameters() {
+      this.title = 'Dashboard'
+      this.country = null
+      this.country2 = null
+    },
+
+    setBreadCrumbItems() {
+      var items = []
+
+      items.push({
+        text: 'Dashboard',
+        disabled: false,
+        exact: true,
+        to: '/covid',
+      })
+
+      if (this.country) {
+        items.push({
+          text: 'Detailed view: ' + this.country,
+          exact: true,
+          disabled: false,
+          to: {name: 'covid-country', params: {country: this.country,}}
+        })
+      }
+
+      if (this.country2) {
+        items.push({
+          text: 'Comparison view: ' + this.country2,
+          exact: true,
+          disabled: true,
+          to: {
+            name: 'covid-country-compare', params: {
+              country: this.country,
+              compare: this.country2,
+            }
+          }
+        })
+      }
+
+      this.breadCrumbItems = items
+    },
 
     async asyncUpdateAll(queryParams = {}) {
       const data = await this.$api.getAll(queryParams)
@@ -121,6 +171,18 @@ export default {
       this.updateCountryNames(data)
 
       this.tableStats = data
+    },
+
+    async updatePeriod(period) {
+      this.period = period
+
+      var periodQueryParams = {
+        '1': {},
+        '2': {yesterday: true},
+        '3': {twoDaysAgo: true},
+      }
+
+      this.updateStats(periodQueryParams[period])
     },
 
     async updateStats(queryParams = {}) {
@@ -179,7 +241,7 @@ export default {
       var location = {
         name: 'covid-country-compare', params: {
           country: this.country,
-          compare: this.country2,
+          compare: this.autoCompleteCountry2,
         }
       }
 

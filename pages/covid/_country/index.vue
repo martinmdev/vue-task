@@ -1,26 +1,16 @@
 <script>
-import BasePage from "@/components/BasePage";
+import CountryPage from "@/components/CountryPage";
 
 
 export default {
-  extends: BasePage,
-  mounted() {
-    this.country = this.$route.params.country
-    this.country2 = null
-
-    this.title = 'Detailed View: ' + this.country
-
-    this.updateStats()
-  },
+  extends: CountryPage,
   methods: {
+    initParameters(){
+        this.country = this.$route.params.country
+        this.country2 = null
 
-    async updateStats(queryParams = {}) {
-      console.log('country updateStats %o', queryParams)
-      this.asyncUpdateCountryData(queryParams)
-      this.asyncUpdateCountryNames(queryParams)
+        this.title = 'Detailed View: ' + this.country
     },
-
-
   }
 }
 </script>

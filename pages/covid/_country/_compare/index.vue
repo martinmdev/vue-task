@@ -1,27 +1,16 @@
 <script>
-import BasePage from "@/components/BasePage";
+import CountryPage from "@/components/CountryPage";
 
 
 export default {
-  extends: BasePage,
-  mounted() {
-    this.country = this.$route.params.country
-    this.country2 = this.$route.params.compare
-
-    this.title = 'Comparison View: ' + this.country + ' vs ' + this.country2
-
-    this.updateStats()
-  },
+  extends: CountryPage,
   methods: {
+    initParameters() {
+      this.country = this.$route.params.country
+      this.country2 = this.$route.params.compare
 
-    async updateStats(queryParams = {}) {
-      console.log('compare updateStats %o', queryParams)
-
-      this.asyncUpdateCountryData(queryParams)
-      this.asyncUpdateCountryNames(queryParams)
+      this.title = 'Comparison View: ' + this.country + ' vs ' + this.country2
     },
-
-
   }
 }
 </script>

@@ -1,23 +1,14 @@
 <template>
-  <div>
-    <!--    <pre><code>{{ compareStats }}</code></pre>-->
-    <v-data-table
-      :headers="getComparisonTableHeaders"
-      :items="getComparisonTableItems"
-      :items-per-page="itemsPerPage"
-    >
-      <!--      <template #item.country="{ value }">-->
-      <!--        <nuxt-link-->
-      <!--          :to="{name: 'covid-country', params:{country:value}}"-->
-      <!--        >-->
-      <!--          {{ value }}-->
-      <!--        </nuxt-link>-->
-      <!--        <a target="_blank" :href="value">-->
-
-      <!--        </a>-->
-      <!--      </template>-->
-    </v-data-table>
-  </div>
+  <v-row>
+    <v-col>
+      <v-data-table
+        :headers="getComparisonTableHeaders"
+        :items="getComparisonTableItems"
+        :items-per-page="itemsPerPage"
+      >
+      </v-data-table>
+    </v-col>
+  </v-row>
 </template>
 <script>
 import BaseCovidStats from "@/components/BaseCovidStats";

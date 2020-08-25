@@ -37,7 +37,6 @@
 </template>
 <script>
 import BaseCovidStats from "@/components/BaseCovidStats";
-import Card1 from "@/components/Card1";
 import _ from 'lodash'
 
 export default {

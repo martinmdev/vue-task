@@ -1,18 +1,24 @@
 <template>
   <v-row>
-    <card-1
+    <v-col
       v-for="(item, index) in getStatsCardsData()"
       :key="index"
+      cols="6"
+    >
+    <card-simple
       :title="item.name"
       :text="item.value"
-    ></card-1>
+    ></card-simple>
+    </v-col>
   </v-row>
 </template>
 <script>
 import BaseCovidStats from "@/components/BaseCovidStats";
 import _ from 'lodash'
+import CardSimple from "@/components/CardSimple";
 
 export default {
+  components: {CardSimple},
   extends: BaseCovidStats,
   methods: {
     getStatsCardsData() {
