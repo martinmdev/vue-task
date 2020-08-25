@@ -131,7 +131,8 @@ export default {
   },
   methods: {
     addItemDifference(item) {
-      console.log('addItemDifference %o', item);
+      // console.log('addItemDifference %o', item);
+
       var skip = [
         'country',
         'updated',
@@ -140,7 +141,7 @@ export default {
         return
       }
 
-      var good= [
+      var good = [
         'testsPerOneMillion',
         'recoveredPerOneMillion',
       ]
