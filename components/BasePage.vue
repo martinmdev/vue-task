@@ -1,63 +1,66 @@
 <template>
-  <div>
-    <slot name="header">
-      <h1>{{ title }}</h1>
-    </slot>
-    <slot name="updateLinks">
-      <v-row>
-        <v-btn small to="/covid" nuxt>Home</v-btn>
-        <v-btn small @click="updateStats()">Today</v-btn>
-        <v-btn small @click="updateStats({yesterday:true})">Yesterday</v-btn>
-        <v-btn small @click="updateStats({twoDaysAgo:true})">Two days ago</v-btn>
-      </v-row>
-    </slot>
-    <slot
-      v-if="country && !country2"
-      name="autocomplete">
-      <v-row>
-        <v-autocomplete
-          v-model="country2"
-          :items="countryNames"
-          :loading="isLoading"
-          label="Compare to"
-          placeholder="Start typing to Search"
-          search-input.sync="search"
-          no-filter
-          hide-no-data
-          hide-selected
-          @change="redirectToCompare"
-        ></v-autocomplete>
-      </v-row>
-    </slot>
-    <slot name="goback"
-          v-if="country2"
-    >
-      <v-btn small @click="redirectToCountry()">Go back</v-btn>
-    </slot>
-    <slot name="cardStats"
-          v-if="!showCompare"
-    >
-      <card-stats
-        :stats="cardStats"
-      ></card-stats>
-    </slot>
-    <slot name="compareStats"
-          v-else
-    >
-      <compare-stats
-        :compare-stats="compareStats"
-      ></compare-stats>
-    </slot>
-    <slot name="tableStats"
-          v-if="!country && !country2"
-    >
-      <table-stats
-        :table-stats="tableStats"
-      ></table-stats>
-    </slot>
-  </div>
-  <!--    </v-flex>-->
-  <!--  </v-layout>-->
+  <v-row>
+    <v-col>
+      <slot name="header">
+        <v-row class="mb-4">
+          <h1>{{ title }}</h1>
+        </v-row>
+      </slot>
+      <slot name="updateLinks">
+        <v-row>
+          <v-btn small to="/covid" nuxt class="mr-4">Dashboard</v-btn>
+          <v-btn v-if="country2" small :to="{name: 'covid-country', params: {country: country,}}" nuxt
+                 class="mr-4"
+          >Go back to Detailed view: {{ country }}
+          </v-btn>
+          <v-btn small @click="updateStats()">Today</v-btn>
+          <v-btn small @click="updateStats({yesterday:true})">Yesterday</v-btn>
+          <v-btn small @click="updateStats({twoDaysAgo:true})">Two days ago</v-btn>
+        </v-row>
+      </slot>
+      <slot
+        v-if="country && !country2"
+        name="autocomplete">
+        <v-row>
+          <v-col>
+            <v-autocomplete
+              v-model="country2"
+              :items="autoCompleteItems"
+              :loading="isLoading"
+              label="Compare to another country"
+              placeholder="Start typing to Search"
+              search-input.sync="search"
+              no-filter
+              hide-no-data
+              hide-selected
+              @change="redirectToCompare"
+            ></v-autocomplete>
+          </v-col>
+        </v-row>
+      </slot>
+      <slot name="cardStats"
+            v-if="!showCompare"
+      >
+        <card-stats
+          :stats="cardStats"
+        ></card-stats>
+      </slot>
+      <slot name="compareStats"
+            v-else
+      >
+        <compare-stats
+          :compare-stats="compareStats"
+        ></compare-stats>
+      </slot>
+      <slot name="tableStats"
+            v-if="!country && !country2"
+      >
+        <table-stats
+          :table-stats="tableStats"
+        ></table-stats>
+      </slot>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
@@ -84,31 +87,44 @@ export default {
       isLoading: false,
       country: null,
       countryNames: [],
+      autoCompleteItems: [],
       country2: null,
       search: null,
     }
   },
   mounted() {
-    this.title = 'All stats'
+    this.title = 'Dashboard'
+    this.country = null
+    this.country2 = null
     // this.asyncUpdateAll()
     // this.asyncUpdateAllCountries()
     this.updateStats()
   },
+  // computed: {
+  //   computedAutocompleteItems() {
+  //     var items = _.cloneDeep([], this.countryNames)
+  //     items = _.without(items, this.country);
+  //     return items
+  //   },
+  // },
   methods: {
 
     async asyncUpdateAll(queryParams = {}) {
       const data = await this.$api.getAll(queryParams)
-      this.updateCountryNames(data)
+      data['country'] = 'Global'
       // this.preview = data
       this.cardStats = data
     },
 
     async asyncUpdateAllCountries(queryParams = {}) {
       const data = await this.$api.getAllCountries(queryParams)
+      this.updateCountryNames(data)
+
       this.tableStats = data
     },
 
     async updateStats(queryParams = {}) {
+      console.log('BasePage updateStats')
       this.asyncUpdateAll(queryParams)
       this.asyncUpdateAllCountries(queryParams)
     },
@@ -119,22 +135,14 @@ export default {
     },
 
     updateCountryNames(data) {
-      // console.log('updateCountryNames data %o', data);
-
-      // var pickProps = [
-      //   "country",
-      // ]
       var countryNames = []
 
       _.forEach(data, function (value) {
-        // var entry = _.pick(value, pickProps);
-        var entry = value.country
-        countryNames.push(entry)
+        countryNames.push(value.country)
       })
 
-      // console.log('countryNames %o', countryNames);
-
       this.countryNames = countryNames
+      this.autoCompleteItems = _.without(countryNames, this.country);
     },
 
     async asyncUpdateCountryData(queryParams = {}) {
@@ -142,8 +150,8 @@ export default {
       if (this.country2) {
         countryList.push(this.country2)
       }
-      const data = await this.$api.getCountries(countryList)
-      console.log('asyncUpdateCountryData %o', data)
+      const data = await this.$api.getCountries(countryList, queryParams)
+      // console.log('asyncUpdateCountryData %o', data)
       if (!_.isArray(data)) {
         this.cardStats = data
         this.showCompare = false
@@ -154,7 +162,7 @@ export default {
     },
 
     redirectToCountry(event) {
-      console.log('redirectToCountry %o', event);
+      // console.log('redirectToCountry %o', event);
 
       var location = {
         name: 'covid-country', params: {
@@ -166,7 +174,7 @@ export default {
     },
 
     redirectToCompare(event) {
-      console.log('redirectToCompare %o', event);
+      // console.log('redirectToCompare %o', event);
 
       var location = {
         name: 'covid-country-compare', params: {

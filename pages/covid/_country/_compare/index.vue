@@ -8,13 +8,15 @@ export default {
     this.country = this.$route.params.country
     this.country2 = this.$route.params.compare
 
-    this.title = this.country + ' vs ' + this.country2
+    this.title = 'Comparison View: ' + this.country + ' vs ' + this.country2
 
     this.updateStats()
   },
   methods: {
 
     async updateStats(queryParams = {}) {
+      console.log('compare updateStats %o', queryParams)
+
       this.asyncUpdateCountryData(queryParams)
       this.asyncUpdateCountryNames(queryParams)
     },

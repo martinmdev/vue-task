@@ -1,143 +1,42 @@
 <script>
 import _ from 'lodash'
 
+const humanizeDuration = require("humanize-duration");
+
 export default {
   props: [
     'stats',
     'tableStats',
     'compareStats'
   ],
-  computed:{
-    getComparisonTableHeaders() {
-      var headers = [
-        {
-          text: 'prop name',
-          align: 'start',
-          sortable: false,
-          value: 'name',
-        },
-        {text: 'value1', value: 'value1'},
-        {text: 'value2', value: 'value2'},
-      ]
-
-      return headers
-    },
-
-    getComparisonTableItems() {
-      var stats = this.compareStats
-      console.log('getComparisonTableItems stats %o', stats);
-
-
-      var items = []
-
-      var itemNames = [
-        "country",
-        "cases",
-        "todayCases",
-        "deaths",
-        "todayDeaths",
-
-        "casesPerOneMillion",
-        "deathsPerOneMillion",
-        "testsPerOneMillion",
-        "oneCasePerPeople",
-        "oneDeathPerPeople",
-        "oneTestPerPeople",
-        "activePerOneMillion",
-        "recoveredPerOneMillion",
-        "criticalPerOneMillion",
-      ]
-
-      var pickProps = this.getPickProps()
-
-      _.forEach(itemNames, function (propName) {
-        var item = {
-          name: propName,
-          value1: stats[0][propName],
-          value2: stats[1][propName],
-        }
-
-        items.push(item)
-      })
-
-      console.log('getComparisonTableItems %o', items);
-
-      return items
-
-    },
-
-  },
   methods: {
 
-    getStatsCardsData() {
-      var data = []
-      var stats = _.pick(this.stats, this.getPickProps());
-      _.forEach(stats, function (value, key) {
-        var elem = {
-          name: key,
-          value: value,
-        }
-
-        data.push(elem)
-      })
-
-      return data
-    },
-
-    getTableHeaders() {
-      // "country",
-      //   // "countryInfo",
-      //   "cases",
-      //   "todayCases",
-      //   "deaths",
-      //   "todayDeaths",
-
-      var headers = [
-        {
-          text: 'country',
-          align: 'start',
-          sortable: false,
-          value: 'country',
-        },
-        {text: 'cases', value: 'cases'},
-        {text: 'todayCases', value: 'todayCases'},
-        {text: 'deaths', value: 'deaths'},
-        {text: 'todayDeaths)', value: 'todayDeaths'},
-      ]
-
-      return headers
-    },
-
-    getTableItems() {
-      var items = []
-
-      var pickProps = this.getPickProps()
-
-      _.forEach(this.tableStats, function (value, key) {
-        var item = _.pick(value, pickProps);
-        items.push(item)
-      })
-
-      return items
-
-    },
-
     getPickProps() {
+      // "countryInfo": {
+      //   "_id": 4,
+      //     "iso2": "AF",
+      //     "iso3": "AFG",
+      //     "lat": 33,
+      //     "long": 65,
+      //     "flag": "https://disease.sh/assets/img/flags/af.png"
+      // },
+
       var pickProps = [
         // "updated",
         "country",
         // "countryInfo",
+        "updated",
         "cases",
-        "todayCases",
+        // "todayCases",
         "deaths",
-        "todayDeaths",
-        // "recovered",
+        // "todayDeaths",
+        "recovered",
         // "todayRecovered",
-        // "active",
-        // "critical",
-        // "casesPerOneMillion",
-        // "deathsPerOneMillion",
-        // "tests",
+        "active",
+        "critical",
+        "casesPerOneMillion",
+        "deathsPerOneMillion",
+        "tests",
         // "testsPerOneMillion",
         // "population",
         // "continent",
@@ -151,7 +50,96 @@ export default {
       return pickProps
     },
 
+    getPropertyToLabelMap() {
+      var map = {
+        "country": "Country",
+        "updated": "Last updated",
+        "cases": "Total cases",
+        "todayCases": "Cases today",
+        "deaths": "Total deaths",
+        "todayDeaths": "Deaths today",
+        "recovered": "Total Recovered",
+        "todayRecovered": "Recovered today",
+        "active": "Total active",
+        "critical": "Total critical",
+        "casesPerOneMillion": "Cases per million",
+        "deathsPerOneMillion": "Deaths per million",
+        "tests": "Total tests",
+        "testsPerOneMillion": "Tests per million",
+        "population": "Population",
+        "continent": "Continent",
+        "oneCasePerPeople": "One case per people",
+        "oneDeathPerPeople": "One death per people",
+        "oneTestPerPeople": "One test per people",
+        "activePerOneMillion": "Active per million",
+        "recoveredPerOneMillion": "Recovered per million",
+        "criticalPerOneMillion": "Critical per million",
+        "affectedCountries": "Affected countries",
+      }
 
+      return map
+    },
+
+    getPropertyFilterMap() {
+      var map = {
+        // "country": "Country",
+        "updated": function (value) {
+          var now = _.now()
+          var diff = now - value
+          var humanizedDuration = humanizeDuration(diff);
+          // var seconds = diff / 1000
+          // var minutes = seconds / 60
+          //
+          // return seconds + ' seconds ago'
+          return humanizedDuration + ' ago'
+        },
+        // "cases": "Total cases",
+        // "todayCases": "Cases today",
+        // "deaths": "Total deaths",
+        // "todayDeaths": "Deaths today",
+        // "recovered": "Total Recovered",
+        // "todayRecovered": "Recovered today",
+        // "active": "Total active",
+        // "critical": "Total critical",
+        // "casesPerOneMillion": "Cases per million",
+        // "deathsPerOneMillion": "Deaths per million",
+        // "tests": "Total tests",
+        // "testsPerOneMillion": "Tests per million",
+        // "population": "Population",
+        // "continent": "Continent",
+        // "oneCasePerPeople": "One case per people",
+        // "oneDeathPerPeople": "One death per people",
+        // "oneTestPerPeople": "One test per people",
+        // "activePerOneMillion": "Active per million",
+        // "recoveredPerOneMillion": "Recovered per million",
+        // "criticalPerOneMillion": "Critical per million",
+        // "affectedCountries": "Affected countries",
+      }
+
+      return map
+    },
+
+    formatPropValue(propName, value) {
+      var filterMap = this.getPropertyFilterMap()
+
+      var filteredValue = value
+      if (propName in filterMap) {
+        filteredValue = filterMap[propName](filteredValue)
+      }
+
+      return filteredValue
+    },
+
+    formatAllProps(object) {
+      var self = this
+      var filterMap = this.getPropertyFilterMap()
+
+      _.forEach(filterMap, function (callback, propName) {
+        if (_.has(object, propName)) {
+          object[propName] = callback(_.get(object, propName))
+        }
+      })
+    }
 
   }
 }

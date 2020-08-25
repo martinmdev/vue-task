@@ -3,6 +3,9 @@ import _ from 'lodash'
 class CovidApi {
   constructor($axios) {
     this.$axios = $axios
+
+    // Set baseURL to something different
+    this.$axios.setBaseURL('https://disease.sh')
   }
 
   async getAll(queryParams = {}) {
@@ -17,7 +20,6 @@ class CovidApi {
 
   async getCountries(countryList = [], queryParams = {}) {
     var path = '/v3/covid-19/countries/'
-    // https://disease.sh/v3/covid-19/countries/Bulgaria%2C%20US
     let csv = countryList.join(',')
     path += csv
 
@@ -34,11 +36,6 @@ export default (context, inject) => {
 
   // Create a custom axios instance
   const customAxios = $axios.create()
-
-  // https://disease.sh/v3/covid-19
-
-  // Set baseURL to something different
-  customAxios.setBaseURL('https://disease.sh')
 
   let api = new CovidApi(customAxios)
 
