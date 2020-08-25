@@ -1,14 +1,14 @@
 <template>
   <v-row>
     <v-col
-      v-for="(item, index) in getStatsCardsData()"
+      v-for="(item, index) in getComputedStatsCardsData"
       :key="index"
       cols="6"
     >
-    <card-simple
-      :title="item.name"
-      :text="item.value"
-    ></card-simple>
+      <card-simple
+        :title="item.name"
+        :text="item.value"
+      ></card-simple>
     </v-col>
   </v-row>
 </template>
@@ -20,13 +20,13 @@ import CardSimple from "@/components/CardSimple";
 export default {
   components: {CardSimple},
   extends: BaseCovidStats,
-  methods: {
-    getStatsCardsData() {
+  computed: {
+    getComputedStatsCardsData() {
       var labelMap = this.getPropertyToLabelMap()
       var self = this
 
       var data = []
-      var stats = _.pick(this.stats, this.getPickProps());
+      var stats = _.pick(this.statsData, this.getPickProps());
       _.forEach(stats, function (value, key) {
         var filteredValue = self.formatPropValue(key, value)
         var elem = {

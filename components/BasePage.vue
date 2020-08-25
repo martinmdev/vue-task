@@ -2,28 +2,28 @@
   <v-layout>
     <v-row>
       <v-col>
-        <slot name="header">
-          <v-row class="mb-4">
-            <h1>{{ title }}</h1>
-          </v-row>
-        </slot>
-        <slot name="updateLinks">
-          <v-row>
-            <v-col cols="6">
-              <v-breadcrumbs
-                :items="breadCrumbItems"
-                divider=">>"
-              ></v-breadcrumbs>
-            </v-col>
-            <v-col>
-              <div class="float-right">
-                <v-btn :depressed="period===1" small @click="updatePeriod(1)">Today</v-btn>
-                <v-btn :depressed="period===2" small @click="updatePeriod(2)">Yesterday</v-btn>
-                <v-btn :depressed="period===3" small @click="updatePeriod(3)">Two days ago</v-btn>
-              </div>
-            </v-col>
-          </v-row>
-        </slot>
+        <!--        <slot name="header">-->
+        <v-row class="mb-4">
+          <h1>{{ title }}</h1>
+        </v-row>
+        <!--        </slot>-->
+        <!--        <slot name="updateLinks">-->
+        <v-row>
+          <v-col cols="6">
+            <v-breadcrumbs
+              :items="breadCrumbItems"
+              divider=">>"
+            ></v-breadcrumbs>
+          </v-col>
+          <v-col>
+            <div class="float-right">
+              <v-btn :depressed="period===1" small @click="updatePeriod(1)">Today</v-btn>
+              <v-btn :depressed="period===2" small @click="updatePeriod(2)">Yesterday</v-btn>
+              <v-btn :depressed="period===3" small @click="updatePeriod(3)">Two days ago</v-btn>
+            </div>
+          </v-col>
+        </v-row>
+        <!--        </slot>-->
         <slot
           v-if="country && !country2"
           name="autocomplete">
@@ -48,21 +48,21 @@
               v-if="!showCompare"
         >
           <card-stats
-            :stats="cardStats"
+            :stats-data="cardStats"
           ></card-stats>
         </slot>
         <slot name="compareStats"
               v-else
         >
           <compare-stats
-            :compare-stats="compareStats"
+            :stats-data="compareStats"
           ></compare-stats>
         </slot>
         <slot name="tableStats"
               v-if="!country && !country2"
         >
           <table-stats
-            :table-stats="tableStats"
+            :stats-data="tableStats"
           ></table-stats>
         </slot>
       </v-col>

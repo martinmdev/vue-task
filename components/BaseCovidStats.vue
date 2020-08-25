@@ -5,9 +5,7 @@ const humanizeDuration = require("humanize-duration");
 
 export default {
   props: [
-    'stats',
-    'tableStats',
-    'compareStats'
+    'statsData',
   ],
   methods: {
 

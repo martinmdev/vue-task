@@ -13,12 +13,11 @@
     <v-col cols="12">
       <v-data-table
         :search="search"
-        :headers="getTableHeaders()"
-        :items="getTableItems()"
+        :headers="getComputedTableHeaders"
+        :items="getComputedTableItems"
         :custom-filter="customFilter"
       >
         <template #item.country="{ value }">
-
           <nuxt-link
             :to="{name: 'covid-country', params:{country:value.name}}"
           >
@@ -46,19 +45,13 @@ export default {
       search: '',
     }
   },
-  methods: {
-    getTableHeaders() {
-      // "country",
-      //   // "countryInfo",
-      //   "cases",
-      //   "todayCases",
-      //   "deaths",
-      //   "todayDeaths",
+  computed: {
+    getComputedTableHeaders() {
 
-      var labelMap = this.getPropertyToLabelMap()
-      var tableItems = this.getTableItems()
+      var tableItems = this.getComputedTableItems
 
       if (tableItems.length) {
+        var labelMap = this.getPropertyToLabelMap()
 
         var headers = []
 
@@ -74,35 +67,24 @@ export default {
         headers[0].sortable = false
       }
 
-      // var headers = [
-      //   {
-      //     text: labelMap['country'],
-      //     align: 'start',
-      //     sortable: false,
-      //     value: 'country',
-      //   },
-      //   {text: labelMap['cases'], value: 'cases'},
-      //   {text: labelMap['todayCases'], value: 'todayCases'},
-      //   {text: labelMap['deaths'], value: 'deaths'},
-      //   {text: labelMap['todayDeaths'], value: 'todayDeaths'},
-      // ]
-
       return headers
     },
 
-    getTableItems() {
+    getComputedTableItems() {
       var items = []
       var self = this
 
       var pickProps = this.getPickProps()
 
-      _.forEach(this.tableStats, function (value, key) {
+      _.forEach(this.statsData, function (value, key) {
         var item = _.pick(value, pickProps);
+
         let name = value['country']
         let nameLowercase = _.toLower(name)
         item.country = value['countryInfo']
         item.country.name = name
         item.country.nameLowercase = nameLowercase
+
         self.formatAllProps(item)
         items.push(item)
       })
@@ -110,6 +92,8 @@ export default {
       return items
 
     },
+  },
+  methods: {
     customFilter(value, search, item) {
 
       if (value == null) {
@@ -124,23 +108,16 @@ export default {
         return false
       }
 
-      // console.log('customFilter %o', arguments)
       var nameLowercase = _.get(item, 'country.nameLowercase', '')
+
       if (_.isString(nameLowercase)) {
         var searchToLower = _.toLower(search)
-        // if (nameLowercase.includes(searchToLower)) {
         if (nameLowercase.startsWith(searchToLower)) {
           return true
         }
       }
-      // if (_.get(item, 'country.nameLowercase', '').include(_.toLower(search))) {
-      //   return true
-      // }
+
       return false
-      // return value != null &&
-      //   search != null &&
-      //   typeof value === 'string' &&
-      //   value.toString().toLocaleLowerCase().indexOf(search.toLocaleLowerCase()) !== -1
     },
   },
 }

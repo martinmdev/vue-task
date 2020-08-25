@@ -2,9 +2,10 @@
   <v-row>
     <v-col>
       <v-data-table
-        :headers="getComparisonTableHeaders"
-        :items="getComparisonTableItems"
+        :headers="getComputedComparisonTableHeaders"
+        :items="getComputedComparisonTableItems"
         :items-per-page="itemsPerPage"
+        hide-default-footer
       >
       </v-data-table>
     </v-col>
@@ -17,7 +18,7 @@ import _ from 'lodash'
 export default {
   extends: BaseCovidStats,
   computed: {
-    getComparisonTableHeaders() {
+    getComputedComparisonTableHeaders() {
       var headers = [
         {
           // text: 'prop name',
@@ -38,8 +39,8 @@ export default {
       return headers
     },
 
-    getComparisonTableItems() {
-      var stats = _.cloneDeep(this.compareStats)
+    getComputedComparisonTableItems() {
+      var stats = _.cloneDeep(this.statsData)
 
       this.formatAllProps(stats[0])
       this.formatAllProps(stats[1])
@@ -71,9 +72,7 @@ export default {
         // "todayDeaths",
       ]
 
-      var pickProps = this.getPickProps()
       var labelMap = this.getPropertyToLabelMap()
-
 
       _.forEach(itemNames, function (propName) {
         var item = {
