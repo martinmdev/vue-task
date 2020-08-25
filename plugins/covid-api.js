@@ -9,12 +9,16 @@ class CovidApi {
   }
 
   async getAll(queryParams = {}) {
-    const data = await this.$axios.$get('/v3/covid-19/all', {params: queryParams})
+    var path = '/v3/covid-19/all'
+    const data = await this.get(path, queryParams)
+    // const data = await this.$axios.$get(, {params: queryParams})
     return data
   }
 
   async getAllCountries(queryParams = {}) {
-    const data = await this.$axios.$get('/v3/covid-19/countries', {params: queryParams})
+    // const data = await this.$axios.$get(, {params: queryParams})
+    var path = '/v3/covid-19/countries'
+    const data = await this.get(path, queryParams)
     return data
   }
 
@@ -25,6 +29,16 @@ class CovidApi {
 
     queryParams.strict = true
 
+    // const data = await this.$axios.$get(path, {params: queryParams})
+    const data = await this.get(path, queryParams)
+    return data
+  }
+
+  async get(path, queryParams = {}) {
+    // console.log('get path %o', path)
+    // console.log('get queryParams %o', queryParams)
+    // const data1 = await this.$axios.get(path, {params: queryParams})
+    // console.log('data1 %o', data1)
     const data = await this.$axios.$get(path, {params: queryParams})
     return data
   }
